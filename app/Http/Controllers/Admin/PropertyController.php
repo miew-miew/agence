@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Models\Option;
 use App\Models\Property;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -35,7 +36,8 @@ class PropertyController extends Controller
             'sold' => false
         ]);
         return view('admin.properties.form', [
-            'property' => $property
+            'property' => $property,
+            'options' => Option::pluck('name', 'id')
         ]);
     }
 
@@ -45,6 +47,7 @@ class PropertyController extends Controller
     public function store(PropertyFormRequest $request)
     {
         $property = Property::create($request->validated());
+        $property->options()->sync($request->validated('options'));
         return redirect()->route('admin.property.index')->with('success', 'Le bien a bien été créé');
     }
 
@@ -54,7 +57,8 @@ class PropertyController extends Controller
     public function edit(Property $property)
     {
         return view('admin.properties.form', [
-            'property' => $property
+            'property' => $property,
+            'options' => Option::pluck('name', 'id')
         ]);
     }
 
@@ -64,6 +68,7 @@ class PropertyController extends Controller
     public function update(PropertyFormRequest $request, Property $property)
     {
         $property->update($request->validated());
+        $property->options()->sync($request->validated('options'));
         return redirect()->route('admin.property.index')->with('success', 'Le bien a bien été modifié');
     }
 
