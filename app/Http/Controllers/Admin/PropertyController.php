@@ -6,6 +6,7 @@ use App\Models\Option;
 use App\Models\Property;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\PropertyFormRequest;
 
 class PropertyController extends Controller
@@ -16,7 +17,7 @@ class PropertyController extends Controller
     public function index()
     {
         return view('admin.properties.index', [
-            'properties' => Property::orderBy('created_at', 'desc')->paginate(25)
+            'properties' => Property::orderBy('created_at', 'desc')->withTrashed()->paginate(25)
         ]);
     }
 
@@ -67,9 +68,24 @@ class PropertyController extends Controller
      */
     public function update(PropertyFormRequest $request, Property $property)
     {
-        $property->update($request->validated());
+        $property->update($this->extractData($property, $request));
         $property->options()->sync($request->validated('options'));
         return redirect()->route('admin.property.index')->with('success', 'Le bien a bien été modifié');
+    }
+
+    private function extractData (Property $property, PropertyFormRequest $request): array
+    {
+        $data = $request->validated();
+        /** @var UploadedFile|null $image */
+        $image = $request->validated('image');
+        if($image === null || $image->getError()){
+            return $data;
+        }
+        if($property->image){
+            Storage::disk('public')->delete($property->image);
+        }
+            $data['image'] = $image->store('bien', 'public');
+            return $data;
     }
 
     /**
