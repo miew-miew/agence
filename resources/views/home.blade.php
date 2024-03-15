@@ -1,6 +1,15 @@
 @extends('base')
 
 @section('content')
+
+    @php
+    $type = "danger"
+    @endphp
+
+    <x-alert type="success">
+        Des informations
+    </x-alert>
+
     <div class="bg-light p-5 mb-5 text-center">
         <div class="container">
             <h1>Agence</h1>
