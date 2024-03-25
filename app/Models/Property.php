@@ -34,6 +34,11 @@ class Property extends Model
         'sold' => 'boolean'
     ];
 
+    public function publish()
+    {
+        Publisher::publish;
+    }
+
     public function options(): BelongsToMany
     {
         return $this->belongsToMany(Option::class);

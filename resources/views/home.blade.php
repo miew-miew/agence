@@ -6,6 +6,8 @@
     $type = "danger"
     @endphp
 
+    <x-weather></x-weather>
+
     <x-alert type="success">
         Des informations
     </x-alert>
